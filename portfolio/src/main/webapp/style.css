@@ -8,7 +8,12 @@
   margin-top: 20px;
 }
 
-img{
+/* img{
     width: 25%;
     height: auto;
+} */
+
+#resize {
+    max-width: 1000px;
+    max-height: 1000px;
 }

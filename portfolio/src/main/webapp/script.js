@@ -26,3 +26,18 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Adds a random song to the page.
+ */
+function addRandomSong() {
+  const songs =
+      ['Watermelon Sugar by Harry Styles', 'A Muse by dvsn', 'Fade Away by Lucky Daye', 'Are You Bored Yet? bu Wallows'];
+
+  // Pick a random song.
+  const song = songs[Math.floor(Math.random() * songs.length)];
+
+  // Add it to the page.
+  const songContainer = document.getElementById('song-container');
+  songContainer.innerText = song;
+}

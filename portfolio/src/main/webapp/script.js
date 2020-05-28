@@ -28,14 +28,17 @@ function addRandomGreeting() {
   greetingContainer.innerText = greeting;
 }
 
-function addRandomQuote() {
-  const quotes =
-      ['Be your own anchor.', 'My name is Barry Allen and Im the fastest man alive' , 'As you wish.', 'Hello, Zuko here.', 'Im the avatar.'];
+/**
+ * Adds a random song to the page.
+ */
+function addRandomSong() {
+  const songs =
+      ['Watermelon Sugar by Harry Styles', 'A Muse by dvsn', 'Fade Away by Lucky Daye', 'Are You Bored Yet? bu Wallows'];
 
-  // Pick a random quote.
-  const quote = quotes[Math.floor(Math.random() * quotes.length)];
+  // Pick a random song.
+  const song = songs[Math.floor(Math.random() * songs.length)];
 
   // Add it to the page.
-  const quoteContainer = document.getElementById('quote-container');
-  quoteContainer.innerText = quote;
+  const songContainer = document.getElementById('song-container');
+  songContainer.innerText = song;
 }

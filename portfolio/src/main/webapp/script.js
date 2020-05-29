@@ -42,3 +42,39 @@ function addRandomSong() {
   const songContainer = document.getElementById('song-container');
   songContainer.innerText = song;
 }
+
+/**
+ * Fetches a message from the server and adds it to the DOM.
+ */
+function getMessage() {
+  console.log('Fetching a message.');
+
+  // The fetch() function returns a Promise because the request is asynchronous.
+  const responsePromise = fetch('/data');
+
+  // When the request is complete, pass the response into handleResponse().
+  responsePromise.then(handleResponse);
+}
+
+/**
+ * Handles response by converting it to text and passing the result to
+ * addMessageToDom().
+ */
+function handleResponse(response) {
+  console.log('Handling the response.');
+
+  // response.text() returns a Promise, because the response is a stream of
+  // content and not a simple variable.
+  const textPromise = response.text();
+
+  // When the response is converted to text, pass the result into the
+  // addMessageToDom() function.
+  textPromise.then(addMessageToDom);
+}
+
+/** Adds a message to the DOM. */
+function addMessageToDom(message) {
+  console.log('Adding message to dom: ' + message);
+
+  const messageContainer = document.getElementById('message-container');
+  messageContainer.innerText = message;

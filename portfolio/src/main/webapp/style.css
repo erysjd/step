@@ -7,10 +7,10 @@
   margin-top: 20px;
 }
 
-/* img{
-    width: 25%;
-    height: auto;
-} */
+#message-container {
+  margin-top: 20px;
+}
+
 
 #resize {
     max-width: 1000px;

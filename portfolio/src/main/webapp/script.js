@@ -77,4 +77,12 @@ function addMessageToDom(message) {
 
   const messageContainer = document.getElementById('message-container');
   messageContainer.innerText = message;
-  
+
+  /**
+ * Fetches messages from the servers and adds them to the DOM.
+ */
+function getMessagess() {
+  fetch('/data').then(response => response.json()).then((message) => {
+      document.getElementById('message-container').innerText = message;
+  });
+}

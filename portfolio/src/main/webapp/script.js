@@ -33,7 +33,7 @@ function addRandomGreeting() {
  */
 function addRandomSong() {
   const songs =
-      ['Watermelon Sugar by Harry Styles', 'A Muse by dvsn', 'Fade Away by Lucky Daye', 'Are You Bored Yet? bu Wallows'];
+      ['Watermelon Sugar by Harry Styles', 'A Muse by dvsn', 'Fade Away by Lucky Daye', 'Are You Bored Yet? by Wallows'];
 
   // Pick a random song.
   const song = songs[Math.floor(Math.random() * songs.length)];

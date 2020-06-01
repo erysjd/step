@@ -42,39 +42,27 @@ function addRandomSong() {
   songContainer.innerText = song;
 }
 
-/**
- * Fetches a random message from the server and adds it to the DOM.
- */
+//Fetches a random message from the server and adds it to the DOM.
 function getRandomMessage() {
-  console.log('Fetching a random message.');
-
-  // The fetch() function returns a Promise because the request is asynchronous.
-  const responsePromise = fetch('/data');
-
-  // When the request is complete, pass the response into handleResponse().
-  responsePromise.then(handleResponse);
+  fetch('/data').then(response => response.text()).then((message) => {
+    document.getElementById('message-container').innerText = message;
+  });
 }
 
-/**
- * Handles response by converting it to text and passing the result to
- * addmessageToDom().
- */
-function handleResponse(response) {
-  console.log('Handling the response.');
+//Fetches comments from the server and adds it to the DOM.
+function getComment() {
+  fetch('/data').then(response => response.text()).then((text) => {
 
-  // response.text() returns a Promise, because the response is a stream of
-  // content and not a simple variable.
-  const textPromise = response.text();
-
-  // When the response is converted to text, pass the result into the
-  // addmessageToDom() function.
-  textPromise.then(addMessageToDom);
+    // Build the list of history entries.
+    const historyEl = document.getElementById('history');
+    historyEl.innerHTML = '';
+    historyEl.appendChild(createListElement(text));
+  });
 }
 
-/** Adds a random message to the DOM. */
-function addMessageToDom(message) {
-  console.log('Adding message to dom: ' + message);
-
-  const messageContainer = document.getElementById('message-container');
-  messageContainer.innerText = message;
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }

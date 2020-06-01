@@ -43,10 +43,10 @@ function addRandomSong() {
 }
 
 /**
- * Fetches a message from the server and adds it to the DOM.
+ * Fetches a random message from the server and adds it to the DOM.
  */
-function getMessage() {
-  console.log('Fetching a message.');
+function getRandomMessage() {
+  console.log('Fetching a random message.');
 
   // The fetch() function returns a Promise because the request is asynchronous.
   const responsePromise = fetch('/data');
@@ -57,7 +57,7 @@ function getMessage() {
 
 /**
  * Handles response by converting it to text and passing the result to
- * addMessageToDom().
+ * addmessageToDom().
  */
 function handleResponse(response) {
   console.log('Handling the response.');
@@ -67,23 +67,14 @@ function handleResponse(response) {
   const textPromise = response.text();
 
   // When the response is converted to text, pass the result into the
-  // addMessageToDom() function.
+  // addmessageToDom() function.
   textPromise.then(addMessageToDom);
 }
 
-/** Adds a message to the DOM. */
+/** Adds a random message to the DOM. */
 function addMessageToDom(message) {
   console.log('Adding message to dom: ' + message);
 
   const messageContainer = document.getElementById('message-container');
   messageContainer.innerText = message;
-}
-
-  /**
- * Fetches messages from the servers and adds them to the DOM.
- */
-function getMessagess() {
-  fetch('/data').then(response => response.json()).then((message) => {
-      document.getElementById('message-container').innerText = message;
-  });
 }

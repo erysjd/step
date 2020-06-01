@@ -39,10 +39,7 @@ public class DataServlet extends HttpServlet {
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      String message = messages.get((int) (Math.random() * messages.size()));
-    // String message = "<h3>Hello Erys</h3>";
-    // response.setContentType("text/html;");
-    // response.getWriter().println(message);
+    String message = messages.get((int) (Math.random() * messages.size()));
 
     // Convert the message to JSON
     Gson gson = new Gson();

@@ -48,12 +48,7 @@ public class DataServlet extends HttpServlet {
     String comment = getParameter(request, "text-input", "");
     if (comment != ""){
       comments.add(comment);
-      response.setContentType("text/html;");
-      response.sendRedirect("/index.html");
     }
-    
-    // Redirect back to the HTML page.
-    response.sendRedirect("/index.html");
   }
 
   /**

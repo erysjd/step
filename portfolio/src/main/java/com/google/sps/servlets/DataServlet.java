@@ -53,6 +53,17 @@ public class DataServlet extends HttpServlet {
       comments.add(comment);
       response.sendRedirect("/index.html");  
     }
+    
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text-input", comment);
+    commentEntity.setProperty("timestamp", timestamp);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
+    response.sendRedirect("/index.html");
   }
 
   /**

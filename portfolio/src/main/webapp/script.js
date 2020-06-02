@@ -49,20 +49,3 @@ function getRandomMessage() {
   });
 }
 
-//Fetches comments from the server and adds it to the DOM.
-function getComment() {
-  fetch('/data').then(response => response.text()).then((text) => {
-
-    // Build the list of history entries.
-    const historyEl = document.getElementById('history');
-    historyEl.innerHTML = '';
-    historyEl.appendChild(createListElement(text));
-  });
-}
-
-/** Creates an <li> element containing text. */
-function createListElement(text) {
-  const liElement = document.createElement('li');
-  liElement.innerText = text;
-  return liElement;
-}

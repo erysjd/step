@@ -69,15 +69,19 @@ function getRandomMessage() {
 
 /**
  * Fetches the current state of the game and builds the UI.
- */
-function getComment() {
-  fetch('/data').then(response => response.json()).then((comment) => {
 
-    // Build the list of history entries.
+ // Build the list of history entries.
     const historyEl = document.getElementById('history');
     comments.history.forEach((line) => {
       historyEl.appendChild(createListElement(line));
     });
+ */
+function getComment() {
+  fetch('/data').then(response => response.json()).then((comment) => {
+    console.log(comment);
+    const commListElement = document.getElementById('comment-container');
+    commListElement.innerHTML = '';
+    commListElement.appendChild(createListElement(comment));
   });
 }
 

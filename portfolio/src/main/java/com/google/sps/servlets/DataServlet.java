@@ -27,23 +27,21 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private List<String> messages;
+  private List<String> comments;
 
   @Override
   public void init() {
-    messages = new ArrayList<>();
-    messages.add("HI!");
-    messages.add("Youre a wizard Harry.");
-    messages.add("Hello, Zuko here.");
+    comments = new ArrayList<>();
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String message = messages.get((int) (Math.random() * messages.size()));
+    String comment = comments.get((int) (Math.random() * comments.size()));
+    comments.add(comment);
 
-    // Convert the message to JSON
+    // Convert the comment to JSON
     Gson gson = new Gson();
-    String json = gson.toJson(message);
+    String json = gson.toJson(comment);
 
     // Send the JSON as the response
     response.setContentType("application/json;");
@@ -54,6 +52,7 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
     String comment = getParameter(request, "text-input", "");
+    comments.add(comment);
 
     // Respond with the result.
     response.setContentType("text/html;");

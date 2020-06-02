@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.google.gson.Gson;
@@ -48,6 +51,7 @@ public class DataServlet extends HttpServlet {
     String comment = getParameter(request, "text-input", "");
     if (comment != ""){
       comments.add(comment);
+      response.sendRedirect("/index.html");  
     }
   }
 

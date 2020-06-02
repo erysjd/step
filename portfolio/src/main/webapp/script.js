@@ -51,10 +51,9 @@ function getRandomMessage() {
 
 function getComment() {
   fetch('/data').then(response => response.json()).then((comment) => {
-
     const commListElement = document.getElementById('comment-container');
-    commListElement.innerHTML = '';
     for (i = 0; i < comment.length; i++){
+        if (comment[i] == ""){continue;}
         commListElement.appendChild(createListElement(comment[i]));
     }
   });

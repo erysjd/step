@@ -49,39 +49,14 @@ function getRandomMessage() {
   });
 }
 
-// //Fetches comments from the server and adds it to the DOM.
-// function getComment() {
-//   fetch('/data').then(response => response.text()).then((text) => {
-
-//     // Build the list of history entries.
-//     const historyEl = document.getElementById('history');
-//     historyEl.innerHTML = '';
-//     historyEl.appendChild(createListElement(text));
-//   });
-// }
-
-// /** Creates an <li> element containing text. */
-// function createListElement(text) {
-//   const liElement = document.createElement('li');
-//   liElement.innerText = text;
-//   return liElement;
-// }
-
-/**
- * Fetches the current state of the game and builds the UI.
-
- // Build the list of history entries.
-    const historyEl = document.getElementById('history');
-    comments.history.forEach((line) => {
-      historyEl.appendChild(createListElement(line));
-    });
- */
 function getComment() {
   fetch('/data').then(response => response.json()).then((comment) => {
-    console.log(comment);
+
     const commListElement = document.getElementById('comment-container');
     commListElement.innerHTML = '';
-    commListElement.appendChild(createListElement(comment));
+    for (i = 0; i < comment.length; i++){
+        commListElement.appendChild(createListElement(comment[i]));
+    }
   });
 }
 

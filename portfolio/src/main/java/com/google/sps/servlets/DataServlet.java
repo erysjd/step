@@ -15,6 +15,7 @@
 package com.google.sps.servlets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
@@ -36,15 +37,8 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = comments.get((int) (Math.random() * comments.size()));
-    comments.add(comment);
-
-    // Convert the comment to JSON
-    Gson gson = new Gson();
-    String json = gson.toJson(comment);
-
-    // Send the JSON as the response
     response.setContentType("application/json;");
+    String json = new Gson().toJson(comments);
     response.getWriter().println(json);
   }
   

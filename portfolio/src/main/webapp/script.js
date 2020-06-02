@@ -49,7 +49,7 @@ function getRandomMessage() {
   });
 }
 
-function getComment() {
+function fetchComments() {
   fetch('/data').then(response => response.json()).then((comment) => {
     const commListElement = document.getElementById('comment-container');
     for (i = 0; i < comment.length; i++){

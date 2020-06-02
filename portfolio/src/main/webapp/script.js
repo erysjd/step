@@ -49,14 +49,35 @@ function getRandomMessage() {
   });
 }
 
-//Fetches comments from the server and adds it to the DOM.
+// //Fetches comments from the server and adds it to the DOM.
+// function getComment() {
+//   fetch('/data').then(response => response.text()).then((text) => {
+
+//     // Build the list of history entries.
+//     const historyEl = document.getElementById('history');
+//     historyEl.innerHTML = '';
+//     historyEl.appendChild(createListElement(text));
+//   });
+// }
+
+// /** Creates an <li> element containing text. */
+// function createListElement(text) {
+//   const liElement = document.createElement('li');
+//   liElement.innerText = text;
+//   return liElement;
+// }
+
+/**
+ * Fetches the current state of the game and builds the UI.
+ */
 function getComment() {
-  fetch('/data').then(response => response.text()).then((text) => {
+  fetch('/data').then(response => response.json()).then((comment) => {
 
     // Build the list of history entries.
     const historyEl = document.getElementById('history');
-    historyEl.innerHTML = '';
-    historyEl.appendChild(createListElement(text));
+    comments.history.forEach((line) => {
+      historyEl.appendChild(createListElement(line));
+    });
   });
 }
 

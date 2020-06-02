@@ -36,7 +36,7 @@ public class DataServlet extends HttpServlet {
     messages.add("Youre a wizard Harry.");
     messages.add("Hello, Zuko here.");
   }
-  
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String message = messages.get((int) (Math.random() * messages.size()));
@@ -49,15 +49,15 @@ public class DataServlet extends HttpServlet {
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
-
+  
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
-    String text = getParameter(request, "text-input", "");
+    String comment = getParameter(request, "text-input", "");
 
     // Respond with the result.
     response.setContentType("text/html;");
-    response.getWriter().println(text);
+    response.getWriter().println(comment);
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
@@ -75,4 +75,3 @@ public class DataServlet extends HttpServlet {
     return value;
   }
 }
-

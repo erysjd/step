@@ -17,6 +17,9 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.google.gson.Gson;
@@ -31,15 +34,27 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private List<String> comments;
+//   private List<String> comments = new ArrayList<>();
 
-  @Override
-  public void init() {
-    comments = new ArrayList<>();
-  }
+//   @Override
+//   public void init() {
+//     comments = new ArrayList<>();
+//     }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> comments = new ArrayList<>();
+    for (Entity commentEntity : results.asIterable()) {
+      String txt = (String) commentEntity.getProperty("text-input");
+      long timestamp = (long) commentEntity.getProperty("timestamp");
+      comments.add(txt);
+    }
+
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
@@ -48,22 +63,23 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getParameter(request, "text-input", "");
-    if (comment == ""){
+    long timestamp = System.currentTimeMillis();
+
+    //tests if the comment is an empty string
+    if (comment.length() == 0){
+        response.sendRedirect("/index.html");
         return;
     }
-    else{
-        comments.add(comment);
-        long timestamp = System.currentTimeMillis();
 
-        Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text-input", comment);
-        commentEntity.setProperty("timestamp", timestamp);
+    // stores the comment in datastore
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text-input", comment);
+    commentEntity.setProperty("timestamp", timestamp);
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(commentEntity);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
 
-        response.sendRedirect("/index.html");
-    }
+    response.sendRedirect("/index.html");
   }
 
   /**
@@ -78,3 +94,4 @@ public class DataServlet extends HttpServlet {
     return value;
   }
 }
+

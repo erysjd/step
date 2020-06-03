@@ -8,13 +8,18 @@
   margin-left: auto;
   margin-right: auto;
   width: 650px;
+  
+#song-container {
+  margin-top: 20px;
+
 }
 
 #song-container {
   margin-top: 20px;
 }
 
-img{
-    width: 25%;
-    height: auto;
+
+#resize {
+    max-width: 1000px;
+    max-height: 1000px;
 }

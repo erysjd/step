@@ -47,11 +47,22 @@ public class DataServlet extends HttpServlet {
   
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get the input from the form.
     String comment = getParameter(request, "text-input", "");
-    if (comment != ""){
-      comments.add(comment);
-      response.sendRedirect("/index.html");  
+    if (comment == ""){
+        return;
+    }
+    else{
+        comments.add(comment);
+        long timestamp = System.currentTimeMillis();
+
+        Entity commentEntity = new Entity("Comment");
+        commentEntity.setProperty("text-input", comment);
+        commentEntity.setProperty("timestamp", timestamp);
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(commentEntity);
+
+        response.sendRedirect("/index.html");
     }
   }
 

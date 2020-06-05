@@ -16,6 +16,7 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -36,12 +37,15 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    int numComm = Integer.parseInt(request.getParameter("num-choice"));
     
     PreparedQuery results = datastore.prepare(query);
 
+    //loading comments from Datastore
     List<String> comments = new ArrayList<>();
-    for (Entity commentEntity : results.asIterable()) {
+    for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
       String txt = (String) commentEntity.getProperty("text-input");
       long timestamp = (long) commentEntity.getProperty("timestamp");
       comments.add(txt);
@@ -84,6 +88,23 @@ public class DataServlet extends HttpServlet {
       return defaultValue;
     }
     return value;
+  }
+
+  //Returns the number of comments the user wants to see.
+  private int getNumComm(HttpServletRequest request) {
+    // Get the input from the form.
+    String numCommString = "10";
+
+    // Convert the input to an int.
+    int numComm;
+    try {
+      numComm = Integer.parseInt(numCommString);
+    } catch (NumberFormatException e) {
+      System.err.println("Could not convert to int: " + numCommString);
+      return -1;
+    }
+
+    return numComm;
   }
 }
 

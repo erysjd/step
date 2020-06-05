@@ -42,23 +42,16 @@ function addRandomSong() {
   songContainer.innerText = song;
 }
 
-//Fetches a random message from the server and adds it to the DOM.
-function getRandomMessage() {
-  fetch('/data').then(response => response.text()).then((message) => {
-    document.getElementById('message-container').innerText = message;
-  });
-}
-
 //Fetches the comment from the server and adds it to the DOM.
 function fetchComments() {
-  fetch('/data').then(response => response.json()).then((comment) => {          //may have to change to .then(comments)
-      console.log("fetching comment" + comment);
+  fetch('/data?num-choice=num-choice').then(response => response.json()).then((comment) => { //write param here? fetch mozilla documentation?
+    console.log("fetching comment" + comment);
     const commListElement = document.getElementById('comment-container');
     for (i = 0; i < comment.length; i++){
         commListElement.appendChild(createListElement(comment[i]));
     }
-  });
     console.log("adding comment to DOM");
+  });
 }
 
 /** Creates an <li> element containing text. */

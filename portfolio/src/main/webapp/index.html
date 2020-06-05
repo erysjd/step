@@ -48,8 +48,18 @@
         <a href="images/week8.JPG"><img src="images/week8.JPG"/></a>
     </div>
 
+
     <div id="content">
-      <h3>Comment Section</h3>
+
+        <h3>Comment Section</h3>
+        <p>Show:</p>
+        <select name="num-choice"  onchange= "fetchComments()">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select> 
+        
         <form action="/data" method="POST">
 
         <textarea name="text-input">public comment...</textarea>

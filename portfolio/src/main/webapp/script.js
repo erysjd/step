@@ -44,10 +44,13 @@ function addRandomSong() {
 
 //Fetches the comment from the server and adds it to the DOM.
 function fetchComments() {
-  fetch('/data?num-choice=num-choice').then(response => response.json()).then((comment) => { //write param here? fetch mozilla documentation?
+  const numComm = document.getElementById('num-choice').value;
+  console.log("numcomm = " + numComm);
+  fetch('/data?num-choice='+numComm).then(response => response.json()).then((comment) => {
     console.log("fetching comment" + comment);
     const commListElement = document.getElementById('comment-container');
-    for (i = 0; i < comment.length; i++){
+    document.getElementById('comment-container').innerHTML = "";
+    for (i = 0; i < numComm; i++){
         commListElement.appendChild(createListElement(comment[i]));
     }
     console.log("adding comment to DOM");
@@ -59,4 +62,12 @@ function createListElement(text) {
   const liElement = document.createElement('li');
   liElement.innerText = text;
   return liElement;
+}
+
+/** Tells the server to delete the comments. */
+function deleteComments() {
+  const params = new URLSearchParams();
+  fetch('/delete-task', {method: 'POST', body: params});
+  var myobj = document.getElementById('comment-container');
+  myobj.remove();
 }

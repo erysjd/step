@@ -41,19 +41,26 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     int numComm = Integer.parseInt(request.getParameter("num-choice"));
     
+    if (numComm > 20) {
+      response.setContentType("text/html");
+      response.getWriter().println("You cannot see over 20 comments");
+      return;
+    }
+    
     PreparedQuery results = datastore.prepare(query);
 
     //loading comments from Datastore
     List<String> comments = new ArrayList<>();
     for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
-      String txt = (String) commentEntity.getProperty("text-input");
-      long timestamp = (long) commentEntity.getProperty("timestamp");
-      comments.add(txt);
+        String txt = (String) commentEntity.getProperty("text-input");
+        long timestamp = (long) commentEntity.getProperty("timestamp");
+        comments.add(txt);
     }
 
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
+
   }
   
   @Override
@@ -88,23 +95,6 @@ public class DataServlet extends HttpServlet {
       return defaultValue;
     }
     return value;
-  }
-
-  //Returns the number of comments the user wants to see.
-  private int getNumComm(HttpServletRequest request) {
-    // Get the input from the form.
-    String numCommString = "10";
-
-    // Convert the input to an int.
-    int numComm;
-    try {
-      numComm = Integer.parseInt(numCommString);
-    } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + numCommString);
-      return -1;
-    }
-
-    return numComm;
   }
 }
 

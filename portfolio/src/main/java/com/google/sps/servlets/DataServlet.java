@@ -16,6 +16,7 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -36,20 +37,23 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    int numComm = Integer.parseInt(request.getParameter("num-choice"));
     
     PreparedQuery results = datastore.prepare(query);
 
+    //loading comments from Datastore
     List<String> comments = new ArrayList<>();
-    for (Entity commentEntity : results.asIterable()) {
+    for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
       String txt = (String) commentEntity.getProperty("text-input");
-      long timestamp = (long) commentEntity.getProperty("timestamp");
       comments.add(txt);
     }
 
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
+
   }
   
   @Override
@@ -59,8 +63,8 @@ public class DataServlet extends HttpServlet {
 
     //tests if the comment is an empty string
     if (comment.length() == 0){
-        response.sendRedirect("/index.html");
-        return;
+      response.sendRedirect("/index.html");
+      return;
     }
 
     // stores the comment in datastore
@@ -85,5 +89,6 @@ public class DataServlet extends HttpServlet {
     }
     return value;
   }
+  
 }
 

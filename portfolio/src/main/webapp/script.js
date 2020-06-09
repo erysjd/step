@@ -43,23 +43,16 @@ function addRandomSong() {
   songContainer.innerText = song;
 }
 
-//Fetches a random message from the server and adds it to the DOM.
-function getRandomMessage() {
-  fetch('/data').then(response => response.text()).then((message) => {
-    document.getElementById('message-container').innerText = message;
-  });
-}
-
 //Fetches the comment from the server and adds it to the DOM.
 function fetchComments() {
-  fetch('/data').then(response => response.json()).then((comment) => {          //may have to change to .then(comments)
-      console.log("fetching comment" + comment);
+  const numComm = document.getElementById('num-choice').value;
+  fetch('/data?num-choice='+numComm).then(response => response.json()).then((comments) => {
     const commListElement = document.getElementById('comment-container');
-    for (i = 0; i < comment.length; i++){
-        commListElement.appendChild(createListElement(comment[i]));
+    document.getElementById('comment-container').innerHTML = "";
+    for (i = 0; i < numComm; i++){
+        commListElement.appendChild(createListElement(comments[i]));
     }
   });
-    console.log("adding comment to DOM");
 }
 
 /** Creates an <li> element containing text. */
@@ -67,4 +60,12 @@ function createListElement(text) {
   const liElement = document.createElement('li');
   liElement.innerText = text;
   return liElement;
+}
+
+/** Tells the server to delete the comments. */
+function deleteComments() {
+  const params = new URLSearchParams();
+  fetch('/delete-task', {method: 'POST', body: params});
+  var myobj = document.getElementById('comment-container');
+  myobj.remove();
 }

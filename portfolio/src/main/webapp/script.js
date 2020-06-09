@@ -45,15 +45,12 @@ function addRandomSong() {
 //Fetches the comment from the server and adds it to the DOM.
 function fetchComments() {
   const numComm = document.getElementById('num-choice').value;
-  console.log("numcomm = " + numComm);
-  fetch('/data?num-choice='+numComm).then(response => response.json()).then((comment) => {
-    console.log("fetching comment" + comment);
+  fetch('/data?num-choice='+numComm).then(response => response.json()).then((comments) => {
     const commListElement = document.getElementById('comment-container');
     document.getElementById('comment-container').innerHTML = "";
     for (i = 0; i < numComm; i++){
-        commListElement.appendChild(createListElement(comment[i]));
+        commListElement.appendChild(createListElement(comments[i]));
     }
-    console.log("adding comment to DOM");
   });
 }
 

@@ -41,20 +41,13 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     int numComm = Integer.parseInt(request.getParameter("num-choice"));
     
-    if (numComm > 20) {
-      response.setContentType("text/html");
-      response.getWriter().println("You cannot see over 20 comments");
-      return;
-    }
-    
     PreparedQuery results = datastore.prepare(query);
 
     //loading comments from Datastore
     List<String> comments = new ArrayList<>();
     for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
-        String txt = (String) commentEntity.getProperty("text-input");
-        long timestamp = (long) commentEntity.getProperty("timestamp");
-        comments.add(txt);
+      String txt = (String) commentEntity.getProperty("text-input");
+      comments.add(txt);
     }
 
     response.setContentType("application/json;");
@@ -70,8 +63,8 @@ public class DataServlet extends HttpServlet {
 
     //tests if the comment is an empty string
     if (comment.length() == 0){
-        response.sendRedirect("/index.html");
-        return;
+      response.sendRedirect("/index.html");
+      return;
     }
 
     // stores the comment in datastore
@@ -96,5 +89,6 @@ public class DataServlet extends HttpServlet {
     }
     return value;
   }
+  
 }
 

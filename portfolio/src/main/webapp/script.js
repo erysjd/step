@@ -64,7 +64,7 @@ function createListElement(text) {
 /** Tells the server to delete the comments. */
 function deleteComments() {
   const params = new URLSearchParams();
-  fetch('/delete-task', {method: 'POST', body: params});
+  fetch('/delete-data', {method: 'POST', body: params});
   var myobj = document.getElementById('comment-container');
   myobj.remove();
 }

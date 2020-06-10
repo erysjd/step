@@ -21,6 +21,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import java.util.ArrayList;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -36,6 +39,21 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // // Get the request parameters.
+    // String originalText = request.getParameter("text");
+    // String languageCode = request.getParameter("languageCode");
+
+    // // Do the translation.
+    // Translate translate = TranslateOptions.getDefaultInstance().getService();
+    // Translation translation =
+    //     translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
+    // String translatedText = translation.getTranslatedText();
+
+    // // Output the translation.
+    // response.setContentType("application/json;");
+    // String translatedJson = new Gson().toJson(translatedText);
+    // response.getWriter().println(translatedJson);
+
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -46,8 +64,16 @@ public class DataServlet extends HttpServlet {
     //loading comments from Datastore
     List<String> comments = new ArrayList<>();
     for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
-      String txt = (String) commentEntity.getProperty("text-input");
-      comments.add(txt);
+      String originalText = (String) commentEntity.getProperty("text-input");
+      String languageCode = request.getParameter("languageCode");
+
+      // Do the translation.
+      Translate translate = TranslateOptions.getDefaultInstance().getService();
+      Translation translation =
+        translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
+      String translatedText = translation.getTranslatedText();
+
+      comments.add(translatedText);
     }
 
     response.setContentType("application/json;");
@@ -74,6 +100,7 @@ public class DataServlet extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
+    
 
     response.sendRedirect("/index.html");
   }
@@ -88,7 +115,21 @@ public class DataServlet extends HttpServlet {
       return defaultValue;
     }
     return value;
-  }
-  
+  } 
 }
+/*
+    // Get the request parameters.
+    String originalText = request.getParameter("text");
+    String languageCode = request.getParameter("languageCode");
 
+    // Do the translation.
+    Translate translate = TranslateOptions.getDefaultInstance().getService();
+    Translation translation =
+        translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
+    String translatedText = translation.getTranslatedText();
+
+    // Output the translation.
+    response.setContentType("application/json;");
+    String translatedJson = new Gson().toJson(translatedText);
+    response.getWriter().println(translatedJson);
+*/

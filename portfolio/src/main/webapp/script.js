@@ -47,7 +47,7 @@ function fetchComments() {
   const numComm = document.getElementById('num-choice').value;
   const lang = getLang();
   console.log("lang: " + lang);
-  fetch('/data?num-choice='+numComm+'?lang='+lang).then(response => response.json()).then((comments) => {
+  fetch('/data?num-choice='+numComm+'&lang='+lang).then(response => response.json()).then((comments) => {     //+'&lang='+lang
     const commListElement = document.getElementById('comment-container');
     document.getElementById('comment-container').innerHTML = "";
     for (i = 0; i < numComm; i++){

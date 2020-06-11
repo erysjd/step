@@ -45,9 +45,10 @@ function addRandomSong() {
 //Fetches the comment from the server and adds it to the DOM.
 function fetchComments() {
   const numComm = document.getElementById('num-choice').value;
-  const lang = getLang();
+  const lang = document.getElementById('language').value;
   console.log("lang: " + lang);
-  fetch('/data?num-choice='+numComm+'&lang='+lang).then(response => response.json()).then((comments) => {     //+'&lang='+lang
+  fetch('/data?num-choice='+numComm+'&lang='+lang).then(response => response.json()).then((comments) => {
+    console.log("comments: " + comments);
     const commListElement = document.getElementById('comment-container');
     document.getElementById('comment-container').innerHTML = "";
     for (i = 0; i < numComm; i++){
@@ -71,8 +72,3 @@ function deleteComments() {
   myobj.remove();
 }
 
-function getLang() {
-  const lang = document.getElementById('language').value;
-//   console.log("lang: " + lang);
-  return lang;
-}

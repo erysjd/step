@@ -67,12 +67,16 @@ public class DataServlet extends HttpServlet {
       String originalText = (String) commentEntity.getProperty("text-input");
       String languageCode = request.getParameter("languageCode");
 
+      System.out.println("OG: "+originalText);
+
       // Do the translation.
       Translate translate = TranslateOptions.getDefaultInstance().getService();
       Translation translation =
         translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
       String translatedText = translation.getTranslatedText();
 
+      System.out.println("NEW: "+translatedText);
+      
       comments.add(translatedText);
     }
 

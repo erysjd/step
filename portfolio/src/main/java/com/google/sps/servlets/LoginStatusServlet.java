@@ -31,14 +31,16 @@ public class LoginStatusServlet extends HttpServlet {
 
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
+      System.out.println("the user is logged in");
       String userEmail = userService.getCurrentUser().getEmail();
-      String urlToRedirectToAfterUserLogsOut = "/data";
+      String urlToRedirectToAfterUserLogsOut = "/";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
       response.getWriter().println("<p>Hello " + userEmail + "!</p>");
       response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
     } else {
-      String urlToRedirectToAfterUserLogsIn = "/data";
+      System.out.println("the user is not logged in");
+      String urlToRedirectToAfterUserLogsIn = "/login";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
       response.getWriter().println("<p>Hello stranger.</p>");

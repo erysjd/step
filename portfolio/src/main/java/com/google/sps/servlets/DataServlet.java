@@ -16,6 +16,8 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -33,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
@@ -45,19 +46,28 @@ public class DataServlet extends HttpServlet {
 
     //loading comments from Datastore
     List<String> comments = new ArrayList<>();
+    List<String> emails = new ArrayList<>();
     for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
       String txt = (String) commentEntity.getProperty("text-input");
+      String email = (String) commentEntity.getProperty("email");
       comments.add(txt);
+      emails.add(email);
     }
 
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
 
+    // String emailJson = new Gson().toJson(emails);
+    // response.getWriter().println(emailJson);
+
   }
   
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    String userEmail = userService.getCurrentUser().getEmail();
+
     String comment = getParameter(request, "text-input", "");
     long timestamp = System.currentTimeMillis();
 
@@ -71,6 +81,8 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("text-input", comment);
     commentEntity.setProperty("timestamp", timestamp);
+    commentEntity.setProperty("email", userEmail);
+
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);

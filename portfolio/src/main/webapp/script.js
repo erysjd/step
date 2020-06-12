@@ -46,6 +46,7 @@ function addRandomSong() {
 function fetchComments() {
   const numComm = document.getElementById('num-choice').value;
   fetch('/data?num-choice='+numComm).then(response => response.json()).then((comments) => {
+    console.log("comment: " + comments);    
     const commListElement = document.getElementById('comment-container');
     document.getElementById('comment-container').innerHTML = "";
     for (i = 0; i < numComm; i++){
@@ -68,3 +69,67 @@ function deleteComments() {
   var myobj = document.getElementById('comment-container');
   myobj.remove();
 }
+
+// unhides the comment form until the user logs in
+function revealComments() {
+    const commForm = document.getElementById("comm-form");
+    // commForm.style.visibility = "hidden";
+    //fetches login staus
+    fetch('/login').then(response => response.json()).then((status) => {
+      console.log("status: " + status);
+      //if the user is logged in show the commForm and if not, then show it
+      if (status[0] == false) {
+        commForm.style.visibility = "hidden";
+        document.getElementById('comm-form').innerText = "Login to see the comments: " + "\n" + status[1];
+        // "In order to see the comments login in here" + loginUrl 
+      } else if (status[1] == true) {
+        commForm.style.visibility = "visible";
+      } 
+    });
+}
+
+/*
+function getLoginUrl() {
+    fetch('/login').then(response => response.json()).then((loginUrl) => {});
+        
+    // Create anchor element. 
+    var a = document.createElement('a');  
+        
+    // Create the text node for anchor element. 
+    var link = document.createTextNode("Log in Here"); 
+        
+    // Append the text node to anchor element. 
+    a.appendChild(link);  
+        
+    // Set the title. 
+    a.title = "Log in Here";  
+        
+    // Set the href property. 
+    a.href = loginUrl";  
+        
+    // Append the anchor element to the body. 
+    document.body.appendChild(a);  
+}
+
+function getLogoutUrl() {
+    fetch('/login').then(response => response.json()).then((logoutUrl) => {});
+        
+    // Create anchor element. 
+    var a = document.createElement('a');  
+        
+    // Create the text node for anchor element. 
+    var link = document.createTextNode("Log out Here"); 
+        
+    // Append the text node to anchor element. 
+    a.appendChild(link);  
+        
+    // Set the title. 
+    a.title = "Log out Here";  
+        
+    // Set the href property. 
+    a.href = logoutUrl";  
+        
+    // Append the anchor element to the body. 
+    document.body.appendChild(a);  
+}
+*/

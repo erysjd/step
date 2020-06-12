@@ -17,6 +17,10 @@ package com.google.sps.servlets;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
+import com.google.gson.Gson;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,23 +32,40 @@ public class LoginStatusServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html");
+    PrintWriter out = response.getWriter();
+    String isLoggedIn = "";
 
+    List<String> statusMessages = new ArrayList<>();
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
-      System.out.println("the user is logged in");
       String userEmail = userService.getCurrentUser().getEmail();
-      String urlToRedirectToAfterUserLogsOut = "/";
+      String urlToRedirectToAfterUserLogsOut = "/login";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
+      isLoggedIn = "true";
 
-      response.getWriter().println("<p>Hello " + userEmail + "!</p>");
-      response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+    //   response.setContentType("text/html");
+    //   response.getWriter().println("<p>Hello " + userEmail + "!</p>");
+    //   response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+
+      statusMessages.add(isLoggedIn);
+      statusMessages.add("Hello " + userEmail + "! \n Logout: " + logoutUrl);
+      response.sendRedirect("/index.html");
     } else {
-      System.out.println("the user is not logged in");
       String urlToRedirectToAfterUserLogsIn = "/login";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+      isLoggedIn = "false";
 
-      response.getWriter().println("<p>Hello stranger.</p>");
-      response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+      statusMessages.add(isLoggedIn);
+      statusMessages.add("Login: " + loginUrl);
+    //   response.setContentType("text/html");
+    //   response.getWriter().println("<p>Hello stranger.</p>");
+    //   response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+
+    //   response.sendRedirect("/login");
     }
+
+    response.setContentType("application/json;");
+    String statusJson = new Gson().toJson(statusMessages);
+    response.getWriter().println(statusJson);
   }
 }

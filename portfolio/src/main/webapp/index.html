@@ -6,9 +6,11 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="fetchComments()">
+  <body onload="revealComments()">
     <div id="content">
       <h1>Erys Dennis' Portfolio</h1>
+      <p>Login <a href="/login" >here</a></p> 
+      <!-- onclick="getLoginUrl()" -->
       <p>Click here to get a random song that I like:</p>
       <button onclick="addRandomSong()">Click Me!</button>
       <div id="song-container"></div>
@@ -49,11 +51,13 @@
 
 
     <div id="content">
+        <button onclick="revealComments()">Show Comments</button>
+
         <h3>Comment Section</h3>
         <label for="quantity">Show:</label>
         <input type="number" id="num-choice" name="quantity" max="20" min="0" onchange="fetchComments()">
                 
-        <form action="/data" method="POST">
+        <form action="/data" method="POST" id="comm-form">
 
         <textarea name="text-input" placeholder="public comment..."></textarea>
         <br/><br/>
@@ -65,7 +69,6 @@
         <ul id="comment-container"></ul>
 
       <button onclick="deleteComments()">Delete Comments</button>
-
     </div>
     
   </body>

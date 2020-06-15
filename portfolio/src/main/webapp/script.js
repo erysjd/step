@@ -77,59 +77,29 @@ function revealComments() {
     //fetches login staus
     fetch('/login').then(response => response.json()).then((status) => {
       console.log("status: " + status);
+      loginUrl = status[1].substring(7);
+      logoutUrl = status[1].substring(8);
       //if the user is logged in show the commForm and if not, then show it
-      if (status[0] == false) {
+      if (status[0].localeCompare("false") === 0) {
+        console.log("url: " + loginUrl);
         commForm.style.visibility = "hidden";
-        document.getElementById('comm-form').innerText = "Login to see the comments: " + "\n" + status[1];
-        // "In order to see the comments login in here" + loginUrl 
-      } else if (status[1] == true) {
+        // Create the login URL
+        var a = document.createElement('a');  
+        var link = document.createTextNode("Log in Here"); 
+        a.appendChild(link);  
+        a.title = "Log in Here";  
+        a.href = loginUrl;  
+        document.body.appendChild(a);
+      } else if (status[1].localeCompare("true") === 0) {
+        console.log("url: " + logoutUrl);
         commForm.style.visibility = "visible";
+        // Create the logout URL
+        var a = document.createElement('a');  
+        var link = document.createTextNode("Log out Here"); 
+        a.appendChild(link);  
+        a.title = "Log out Here";  
+        a.href = logoutUrl;  
+        document.body.appendChild(a);
       } 
     });
 }
-
-/*
-function getLoginUrl() {
-    fetch('/login').then(response => response.json()).then((loginUrl) => {});
-        
-    // Create anchor element. 
-    var a = document.createElement('a');  
-        
-    // Create the text node for anchor element. 
-    var link = document.createTextNode("Log in Here"); 
-        
-    // Append the text node to anchor element. 
-    a.appendChild(link);  
-        
-    // Set the title. 
-    a.title = "Log in Here";  
-        
-    // Set the href property. 
-    a.href = loginUrl";  
-        
-    // Append the anchor element to the body. 
-    document.body.appendChild(a);  
-}
-
-function getLogoutUrl() {
-    fetch('/login').then(response => response.json()).then((logoutUrl) => {});
-        
-    // Create anchor element. 
-    var a = document.createElement('a');  
-        
-    // Create the text node for anchor element. 
-    var link = document.createTextNode("Log out Here"); 
-        
-    // Append the text node to anchor element. 
-    a.appendChild(link);  
-        
-    // Set the title. 
-    a.title = "Log out Here";  
-        
-    // Set the href property. 
-    a.href = logoutUrl";  
-        
-    // Append the anchor element to the body. 
-    document.body.appendChild(a);  
-}
-*/

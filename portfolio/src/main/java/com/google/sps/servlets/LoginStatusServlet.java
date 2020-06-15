@@ -43,10 +43,6 @@ public class LoginStatusServlet extends HttpServlet {
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
       isLoggedIn = "true";
 
-    //   response.setContentType("text/html");
-    //   response.getWriter().println("<p>Hello " + userEmail + "!</p>");
-    //   response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
-
       statusMessages.add(isLoggedIn);
       statusMessages.add("Hello " + userEmail + "! \n Logout: " + logoutUrl);
       response.sendRedirect("/index.html");
@@ -57,11 +53,6 @@ public class LoginStatusServlet extends HttpServlet {
 
       statusMessages.add(isLoggedIn);
       statusMessages.add("Login: " + loginUrl);
-    //   response.setContentType("text/html");
-    //   response.getWriter().println("<p>Hello stranger.</p>");
-    //   response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
-
-    //   response.sendRedirect("/login");
     }
 
     response.setContentType("application/json;");

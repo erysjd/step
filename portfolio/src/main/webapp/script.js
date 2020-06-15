@@ -43,19 +43,15 @@ function addRandomSong() {
   songContainer.innerText = song;
 }
 
-//Fetches a random message from the server and adds it to the DOM.
-function getRandomMessage() {
-  fetch('/data').then(response => response.text()).then((message) => {
-    document.getElementById('message-container').innerText = message;
-  });
-}
-
+//Fetches the comment from the server and adds it to the DOM.
 function fetchComments() {
-  fetch('/data').then(response => response.json()).then((comment) => {
+  const numComm = document.getElementById('num-choice').value;
+  fetch('/data?num-choice='+numComm).then(response => response.json()).then((comments) => {
+    console.log("comment: " + comments);    
     const commListElement = document.getElementById('comment-container');
-    for (i = 0; i < comment.length; i++){
-        if (comment[i] == ""){continue;}
-        commListElement.appendChild(createListElement(comment[i]));
+    document.getElementById('comment-container').innerHTML = "";
+    for (i = 0; i < numComm; i++){
+        commListElement.appendChild(createListElement(comments[i]));
     }
   });
 }
@@ -65,4 +61,46 @@ function createListElement(text) {
   const liElement = document.createElement('li');
   liElement.innerText = text;
   return liElement;
+}
+
+/** Tells the server to delete the comments. */
+function deleteComments() {
+  const params = new URLSearchParams();
+  fetch('/delete-data', {method: 'POST', body: params});
+  var myobj = document.getElementById('comment-container');
+  myobj.remove();
+}
+
+// unhides the comment form until the user logs in
+function revealComments() {
+    const commForm = document.getElementById("comm-form");
+    // commForm.style.visibility = "hidden";
+    //fetches login staus
+    fetch('/login').then(response => response.json()).then((status) => {
+      console.log("status: " + status);
+      loginUrl = status[1].substring(7);
+      logoutUrl = status[1].substring(8);
+      //if the user is logged in show the commForm and if not, then show it
+      if (status[0].localeCompare("false") === 0) {
+        console.log("url: " + loginUrl);
+        commForm.style.visibility = "hidden";
+        // Create the login URL
+        var a = document.createElement('a');  
+        var link = document.createTextNode("Log in Here"); 
+        a.appendChild(link);  
+        a.title = "Log in Here";  
+        a.href = loginUrl;  
+        document.body.appendChild(a);
+      } else if (status[1].localeCompare("true") === 0) {
+        console.log("url: " + logoutUrl);
+        commForm.style.visibility = "visible";
+        // Create the logout URL
+        var a = document.createElement('a');  
+        var link = document.createTextNode("Log out Here"); 
+        a.appendChild(link);  
+        a.title = "Log out Here";  
+        a.href = logoutUrl;  
+        document.body.appendChild(a);
+      } 
+    });
 }

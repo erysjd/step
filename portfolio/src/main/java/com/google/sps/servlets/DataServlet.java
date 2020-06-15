@@ -16,9 +16,14 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
@@ -30,16 +35,25 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  
-  private List<String> comments;
-
-  @Override
-  public void init() {
-    comments = new ArrayList<>();
-  }
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    int numComm = Integer.parseInt(request.getParameter("num-choice"));
+    
+    PreparedQuery results = datastore.prepare(query);
+
+    //loading comments from Datastore
+    List<String> comments = new ArrayList<>();
+    List<String> emails = new ArrayList<>();
+    for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
+      String txt = (String) commentEntity.getProperty("text-input");
+      String email = (String) commentEntity.getProperty("email");
+      comments.add(email + " commented: " + txt);
+      emails.add(email);
+    }
+
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
@@ -47,23 +61,29 @@ public class DataServlet extends HttpServlet {
   
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    String userEmail = userService.getCurrentUser().getEmail();
+
     String comment = getParameter(request, "text-input", "");
-    if (comment == ""){
-        return;
+    long timestamp = System.currentTimeMillis();
+
+    //tests if the comment is an empty string
+    if (comment.length() == 0){
+      response.sendRedirect("/index.html");
+      return;
     }
-    else{
-        comments.add(comment);
-        long timestamp = System.currentTimeMillis();
 
-        Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text-input", comment);
-        commentEntity.setProperty("timestamp", timestamp);
+    // stores the comment in datastore
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text-input", comment);
+    commentEntity.setProperty("timestamp", timestamp);
+    commentEntity.setProperty("email", userEmail);
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(commentEntity);
 
-        response.sendRedirect("/index.html");
-    }
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
+    response.sendRedirect("/index.html");
   }
 
   /**
@@ -77,4 +97,6 @@ public class DataServlet extends HttpServlet {
     }
     return value;
   }
+  
 }
+

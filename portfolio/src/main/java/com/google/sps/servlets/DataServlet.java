@@ -50,17 +50,13 @@ public class DataServlet extends HttpServlet {
     for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
       String txt = (String) commentEntity.getProperty("text-input");
       String email = (String) commentEntity.getProperty("email");
-      comments.add(txt);
+      comments.add(email + " commented: " + txt);
       emails.add(email);
     }
 
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
-
-    // String emailJson = new Gson().toJson(emails);
-    // response.getWriter().println(emailJson);
-
   }
   
   @Override

@@ -44,7 +44,7 @@ public class LoginStatusServlet extends HttpServlet {
       isLoggedIn = "true";
 
       statusMessages.add(isLoggedIn);
-      statusMessages.add("Hello " + userEmail + "! \n Logout: " + logoutUrl);
+      statusMessages.add("Logout: " + logoutUrl);
       response.sendRedirect("/index.html");
     } else {
       String urlToRedirectToAfterUserLogsIn = "/login";

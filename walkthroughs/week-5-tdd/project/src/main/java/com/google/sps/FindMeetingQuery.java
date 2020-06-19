@@ -27,12 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-// import Events.java;
-
 public final class FindMeetingQuery {
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+    public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> result = new ArrayList<>(); // the return value: just a list of time ranges.
     Collection<String> attendees = request.getAttendees();
+    Collection<String> optAttendees = request.getOptionalAttendees();
     Iterator<Event> itr = events.iterator();
 
     //noOptionsForTooLongOfARequest()
@@ -57,66 +56,144 @@ public final class FindMeetingQuery {
             result.add(TimeRange.fromStartEnd(event.getWhen().end(), TimeRange.END_OF_DAY,true));
         }
     }
-    else{
-        Event event1 = itr.next();
-        Set<String> attendees1 = new HashSet<>(event1.getAttendees());
-        Event event2 = itr.next();
-        Set<String> attendees2 = new HashSet<>(event2.getAttendees());
+    else if(events.size() > 1){
+        if(optAttendees.isEmpty()){
+            Event event1 = itr.next();
+            Set<String> attendees1 = new HashSet<>(event1.getAttendees());
+            Event event2 = itr.next();
+            Set<String> attendees2 = new HashSet<>(event2.getAttendees());
 
-        if((attendees.containsAll(attendees1) && attendees.containsAll(attendees2)) == false){
-            result.add(TimeRange.WHOLE_DAY);
-        }
-
-        //nestedEvents(), doubleBookedPeople(), 
-        if(event1.getWhen().contains(event2.getWhen())){
-            result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false));
-            result.add(TimeRange.fromStartEnd(event1.getWhen().end(), TimeRange.END_OF_DAY,true));
-
-        }
-        else if(event2.getWhen().contains(event1.getWhen())){
-            result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event2.getWhen().start(),false));
-            result.add(TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true));
-
-        }
-        //overlappingEvents()
-        else if(event1.getWhen().overlaps(event2.getWhen())){
-            result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false));
-            result.add(TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true));
-        }
-        else if(event2.getWhen().overlaps(event1.getWhen())){
-            result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event2.getWhen().start(),false));
-            result.add(TimeRange.fromStartEnd(event1.getWhen().end(), TimeRange.END_OF_DAY,true));
-        }
-        // justEnoughRoom(), notEnoughRoom()
-        else if(event1.getWhen().start() == TimeRange.START_OF_DAY && event2.getWhen().end() == TimeRange.END_OF_DAY + 1){
-            TimeRange range = TimeRange.fromStartEnd(event1.getWhen().end(), event2.getWhen().start(),false);
-            if(range.duration() >= request.getDuration()){
-                result.add(range);
+            if((attendees.containsAll(attendees1) && attendees.containsAll(attendees2)) == false){
+                result.add(TimeRange.WHOLE_DAY);
             }
-        }
-        else if(event1.getWhen().start() > TimeRange.START_OF_DAY && event2.getWhen().start() > TimeRange.START_OF_DAY){
-            if(event1.getWhen().end() < TimeRange.END_OF_DAY && event2.getWhen().end() < TimeRange.END_OF_DAY){
-                if(event1.getWhen().end() < event2.getWhen().start()){
-                    TimeRange before = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false);
-                    TimeRange middle = TimeRange.fromStartEnd(event1.getWhen().end(), event2.getWhen().start(),false);
-                    TimeRange after = TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true);
 
-                    if (before.duration() >= request.getDuration()){
-                        result.add(before);
-                    }
-                    if (middle.duration() >= request.getDuration()){
-                        result.add(middle);
-                    }
-                    if (after.duration() >= request.getDuration()){
-                        result.add(after);
+            //nestedEvents(), doubleBookedPeople(), 
+            if(event1.getWhen().contains(event2.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event1.getWhen().end(), TimeRange.END_OF_DAY,true));
+
+            }
+            else if(event2.getWhen().contains(event1.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event2.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true));
+
+            }
+            //overlappingEvents()
+            else if(event1.getWhen().overlaps(event2.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true));
+            }
+            else if(event2.getWhen().overlaps(event1.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event2.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event1.getWhen().end(), TimeRange.END_OF_DAY,true));
+            }
+            // justEnoughRoom(), notEnoughRoom()
+            else if(event1.getWhen().start() == TimeRange.START_OF_DAY && event2.getWhen().end() == TimeRange.END_OF_DAY + 1){
+                TimeRange range = TimeRange.fromStartEnd(event1.getWhen().end(), event2.getWhen().start(),false);
+                if(range.duration() >= request.getDuration()){
+                    result.add(range);
+                }
+            }
+            else if(event1.getWhen().start() > TimeRange.START_OF_DAY && event2.getWhen().start() > TimeRange.START_OF_DAY){
+                if(event1.getWhen().end() < TimeRange.END_OF_DAY && event2.getWhen().end() < TimeRange.END_OF_DAY){
+                    if(event1.getWhen().end() < event2.getWhen().start()){
+                        TimeRange before = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false);
+                        TimeRange middle = TimeRange.fromStartEnd(event1.getWhen().end(), event2.getWhen().start(),false);
+                        TimeRange after = TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true);
+
+                        if (before.duration() >= request.getDuration()){
+                            result.add(before);
+                        }
+                        if (middle.duration() >= request.getDuration()){
+                            result.add(middle);
+                        }
+                        if (after.duration() >= request.getDuration()){
+                            result.add(after);
+                        }
                     }
                 }
             }
         }
+        else if(!optAttendees.isEmpty()){
+            Event event1 = itr.next();
+            Set<String> attendees1 = new HashSet<>(event1.getAttendees());
+            Event event2 = itr.next();
+            Set<String> attendees2 = new HashSet<>(event2.getAttendees());
+
+            //nestedEvents(), doubleBookedPeople(), 
+            if(event1.getWhen().contains(event2.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event1.getWhen().end(), TimeRange.END_OF_DAY,true));
+
+            }
+            else if(event2.getWhen().contains(event1.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event2.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true));
+
+            }
+            //overlappingEvents()
+            else if(event1.getWhen().overlaps(event2.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true));
+            }
+            else if(event2.getWhen().overlaps(event1.getWhen())){
+                result.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event2.getWhen().start(),false));
+                result.add(TimeRange.fromStartEnd(event1.getWhen().end(), TimeRange.END_OF_DAY,true));
+            }
+            // justEnoughRoom(), notEnoughRoom()
+            else if(event1.getWhen().start() == TimeRange.START_OF_DAY && event2.getWhen().end() == TimeRange.END_OF_DAY + 1){
+                TimeRange range = TimeRange.fromStartEnd(event1.getWhen().end(), event2.getWhen().start(),false);
+                if(range.duration() >= request.getDuration()){
+                    result.add(range);
+                }
+            }
+            else if(event1.getWhen().start() > TimeRange.START_OF_DAY && event2.getWhen().start() > TimeRange.START_OF_DAY){
+                if(event1.getWhen().end() < TimeRange.END_OF_DAY && event2.getWhen().end() < TimeRange.END_OF_DAY){
+                    if(event1.getWhen().end() < event2.getWhen().start()){
+                        TimeRange before = TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event1.getWhen().start(),false);
+                        TimeRange middle = TimeRange.fromStartEnd(event1.getWhen().end(), event2.getWhen().start(),false);
+                        TimeRange after = TimeRange.fromStartEnd(event2.getWhen().end(), TimeRange.END_OF_DAY,true);
+
+                        if (before.duration() >= request.getDuration()){
+                            result.add(before);
+                        }
+                        if (middle.duration() >= request.getDuration()){
+                            result.add(middle);
+                        }
+                        if (after.duration() >= request.getDuration()){
+                            result.add(after);
+                        }
+                    }
+                }
+            }
+            if (itr.hasNext()){
+                Event optEvent = itr.next();
+                for (TimeRange range : result){
+                    if(optEvent.getWhen().equals(TimeRange.WHOLE_DAY)){
+                        break;
+                    }else {
+                        if(result.size() > 1){
+                            if(optEvent.getWhen().contains(range) || range.contains(optEvent.getWhen())){
+                                result.remove(range);
+                            }
+                            else if(optEvent.getWhen().equals(range)){
+                                result.remove(range);
+                            }
+                            else if(optEvent.getWhen().overlaps(range) || range.overlaps(optEvent.getWhen())){
+                                result.remove(range);
+                            }
+                        }
+                        else if(result.size() == 1){
+                            break;
+                        }
+                    }
+                }                 
+            } 
+        }
+
     }
 
     return result;
   }
 }
-
 

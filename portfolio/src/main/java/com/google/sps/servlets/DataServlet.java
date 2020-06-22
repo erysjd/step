@@ -16,9 +16,15 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
@@ -30,40 +36,77 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  
-  private List<String> comments;
-
-  @Override
-  public void init() {
-    comments = new ArrayList<>();
-  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // // Get the request parameters.
+    // String originalText = request.getParameter("text");
+    // String languageCode = request.getParameter("languageCode");
+
+    // // Do the translation.
+    // Translate translate = TranslateOptions.getDefaultInstance().getService();
+    // Translation translation =
+    //     translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
+    // String translatedText = translation.getTranslatedText();
+
+    // // Output the translation.
+    // response.setContentType("application/json;");
+    // String translatedJson = new Gson().toJson(translatedText);
+    // response.getWriter().println(translatedJson);
+
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    int numComm = Integer.parseInt(request.getParameter("num-choice"));
+    
+    PreparedQuery results = datastore.prepare(query);
+
+    //loading comments from Datastore
+    List<String> comments = new ArrayList<>();
+    for (Entity commentEntity : results.asIterable(FetchOptions.Builder.withLimit(numComm))) {
+      String originalText = (String) commentEntity.getProperty("text-input");
+      String languageCode = request.getParameter("languageCode");
+
+      System.out.println("OG: "+originalText);
+
+      // Do the translation.
+      Translate translate = TranslateOptions.getDefaultInstance().getService();
+      Translation translation =
+        translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
+      String translatedText = translation.getTranslatedText();
+
+      System.out.println("NEW: "+translatedText);
+      
+      comments.add(translatedText);
+    }
+
     response.setContentType("application/json;");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
+
   }
   
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getParameter(request, "text-input", "");
-    if (comment == ""){
-        return;
+    long timestamp = System.currentTimeMillis();
+
+    //tests if the comment is an empty string
+    if (comment.length() == 0){
+      response.sendRedirect("/index.html");
+      return;
     }
-    else{
-        comments.add(comment);
-        long timestamp = System.currentTimeMillis();
 
-        Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text-input", comment);
-        commentEntity.setProperty("timestamp", timestamp);
+    // stores the comment in datastore
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text-input", comment);
+    commentEntity.setProperty("timestamp", timestamp);
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(commentEntity);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+    
 
-        response.sendRedirect("/index.html");
-    }
+    response.sendRedirect("/index.html");
   }
 
   /**
@@ -76,5 +119,21 @@ public class DataServlet extends HttpServlet {
       return defaultValue;
     }
     return value;
-  }
+  } 
 }
+/*
+    // Get the request parameters.
+    String originalText = request.getParameter("text");
+    String languageCode = request.getParameter("languageCode");
+
+    // Do the translation.
+    Translate translate = TranslateOptions.getDefaultInstance().getService();
+    Translation translation =
+        translate.translate(originalText, Translate.TranslateOption.targetLanguage(languageCode));
+    String translatedText = translation.getTranslatedText();
+
+    // Output the translation.
+    response.setContentType("application/json;");
+    String translatedJson = new Gson().toJson(translatedText);
+    response.getWriter().println(translatedJson);
+*/

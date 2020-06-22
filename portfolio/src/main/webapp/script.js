@@ -73,7 +73,6 @@ function deleteComments() {
 // unhides the comment form until the user logs in
 function revealComments() {
     const commForm = document.getElementById("comm-form");
-    // commForm.style.visibility = "hidden";
     //fetches login staus
     fetch('/login').then(response => response.json()).then((status) => {
       console.log("status: " + status);
@@ -90,7 +89,7 @@ function revealComments() {
         a.title = "Log in Here";  
         a.href = loginUrl;  
         document.body.appendChild(a);
-      } else if (status[1].localeCompare("true") === 0) {
+      } else if (status[0].localeCompare("true") === 0) {
         console.log("url: " + logoutUrl);
         commForm.style.visibility = "visible";
         // Create the logout URL

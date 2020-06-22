@@ -1,4 +1,4 @@
-#content {
+#content{
   margin-left: auto;
   margin-right: auto;
   width: 650px;
@@ -8,16 +8,21 @@
   margin-right: auto;
   width: 650px;
 }
-#comment-container {
+#comment-container{
   margin-left: auto;
   margin-right: auto;
   width: 650px;
 }
-
+div:hover{
+  border: 15px solid black;
+  padding: 50px;
+}
+a:hover {
+  background-color: yellow;
+}
 #song-container {
   margin-top: 20px;
 }
-
 img{
     width: 25%;
     height: auto;
